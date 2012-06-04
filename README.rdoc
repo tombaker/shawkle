@@ -1,0 +1,36 @@
+= Listmunger - refreshes a folder of plain-text lists according to your evolving rules
+
+Author::  Tom Baker (mailto:tom at tombaker dot org)
+Copyright:: Copyright (c) 2012 by Tom Baker
+License:: Distributes under the Apache License, see LICENSE.txt in the source distro
+
+Designed to process sets of plain-text lists -- files composed solely of
+plain-text lines of screen or Tweet width -- according to your evolving set of
+rules.  Starting with an aggregate set of all lines from all lists, rules
+specify how lines matching a regular-expression pattern are to be moved from a
+source file to a target file.  Listmunger starts by backing up all of the
+plain-text files in a folder, deletes the originals, then refreshes the files
+according to the rules.  The names, composition, and sort order of list files
+can be changed by tweaking the rules to add keywords, comment out rules, and
+the like.
+
+This project began in 1993 as a Korn shell script written using DOS 3.3 and the
+MKS Toolkit.  The original script, Shuffle, was published in December 1994 in
+UnixWorld [1]. After using awk in a rewrite of the script, I published the
+rewritten script in December 2006 in lifehacker.com under the name Shawkle [2],
+with an expanded narrative about the rationale for its design.  In 2011, I
+released Shawkle in a faster and expanded version completely rewritten in
+Python [3].
+
+A development version of the source code for Shawkle (Python version) is now
+part of this Github project -- see Google Code for the stable version [3] --
+but as of May 2012 I am learning Ruby and intend to write a version in Ruby,
+Listmunger.
+
+== Links
+
+* [1] http://www.networkcomputing.com/unixworld/grabbag/06.txt.html (as of 2012-05-18)
+* [2] http://lifehacker.com/217063/getting-things-done-with-rule+based-list-processing
+* [3] http://code.google.com/p/shawkle/
+* [4] http://shawkle.googlecode.com/svn/trunk
+
