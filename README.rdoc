@@ -38,3 +38,4 @@ shuffle.py [5].
 
 [4] http://shawkle.googlecode.com/svn/trunk
 
+[5] https://github.com/tombaker/shawkle/blob/master/shuffle.py
