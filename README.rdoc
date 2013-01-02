@@ -29,8 +29,11 @@ Listmunger.
 
 == Links
 
-* [1] http://www.networkcomputing.com/unixworld/grabbag/06.txt.html (as of 2012-05-18)
-* [2] http://lifehacker.com/217063/getting-things-done-with-rule+based-list-processing
-* [3] http://code.google.com/p/shawkle/
-* [4] http://shawkle.googlecode.com/svn/trunk
+[1] http://www.networkcomputing.com/unixworld/grabbag/06.txt.html (as of 2012-05-18)
+
+[2] http://lifehacker.com/217063/getting-things-done-with-rule+based-list-processing
+
+[3] http://code.google.com/p/shawkle/
+
+[4] http://shawkle.googlecode.com/svn/trunk
 
