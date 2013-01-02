@@ -1,4 +1,4 @@
-= Listmunger - refreshes a folder of plain-text lists according to your evolving rules
+= shawkle - refreshes a folder of plain-text lists according to your evolving rules
 
 Author::  Tom Baker (mailto:tom at tombaker dot org)
 Copyright:: Copyright (c) 2012 by Tom Baker
