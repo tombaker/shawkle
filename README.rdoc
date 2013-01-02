@@ -8,7 +8,7 @@ Designed to process sets of plain-text lists -- files composed solely of
 plain-text lines of screen or Tweet width -- according to your evolving set of
 rules.  Starting with an aggregate set of all lines from all lists, rules
 specify how lines matching a regular-expression pattern are to be moved from a
-source file to a target file.  Listmunger starts by backing up all of the
+source file to a target file.  Shawkle starts by backing up all of the
 plain-text files in a folder, deletes the originals, then refreshes the files
 according to the rules.  The names, composition, and sort order of list files
 can be changed by tweaking the rules to add keywords, comment out rules, and
@@ -23,9 +23,10 @@ released Shawkle in a faster and expanded version completely rewritten in
 Python [3].
 
 A development version of the source code for Shawkle (Python version) is now
-part of this Github project -- see Google Code for the stable version [3] --
-but as of May 2012 I am learning Ruby and intend to write a version in Ruby,
-Listmunger.
+part of this Github project -- see Google Code for the stable version [3,4].
+
+As of December 2012, the version I actually use on a daily basis is called
+shuffle.py [5].
 
 == Links
 
