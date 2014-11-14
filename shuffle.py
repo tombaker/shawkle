@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# 2014-11-14: original at ~/github/tombaker/shawkle/shuffle.py
 
 from __future__ import division
 import os, re, shutil, string, sys, datetime, optparse
