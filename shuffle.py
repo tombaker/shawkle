@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# 2012-11-08: original at ~/agit/shawkle/shuffle.py
 
 from __future__ import division
 import os, re, shutil, string, sys, datetime, optparse
@@ -295,7 +294,7 @@ def relocatefiles(files2dirs):
     for line in files2dirs:
         filename = line[0]
         dirpath = os.path.expanduser(line[1])
-        timestampedpathname = dirpath + '/' + prefix[0:13] + prefix[14:16] + prefix[17:19] + '.' + filename
+        timestampedpathname = dirpath + '/' + prefix[0:13] + prefix[14:16] + prefix[17:25] + '.' + filename
         try:
             shutil.move(filename, timestampedpathname)
             print 'Moving', repr(filename), 'to', repr(timestampedpathname)
