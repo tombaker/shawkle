@@ -1,0 +1,64 @@
+def shuffle2(rules, datalines):
+    """An alternative way to code shuffle().  
+    Instead of writing files at every step of the way, collects lines in a dictionary structure.
+    Initial tests on 2011-03-30 suggest that this might actually be _slower_.
+    Takes as arguments a list of rules and a list of data lines as a starting point.
+    For the first rule only: 
+        writes lines matching the regular expression to the target file,
+        writes lines not matching the regular expression to the source file.
+    For each subsequent rule: 
+        reads data lines from source file, 
+        writes lines matching the regular expression to the target file, 
+        writes lines not matching the regular expression to the source file, overwriting the source file."""
+    rulenumber = 0
+    all = {}
+    for rule in rules:
+        rulenumber += 1
+        field = rule[0]
+        searchkey = rule[1]
+        source = rule[2]
+        target = rule[3]
+        sortorder = rule[4]
+        sourcelines = []
+        targetlines = []
+        if sortorder:
+            print '%s [%s] "%s" to "%s", sorted by field %s' % (field, searchkey, source, target, sortorder)
+        else:
+            print '%s [%s] "%s" to "%s"' % (field, searchkey, source, target)
+        if rulenumber > 1:
+            #datalines = list(open(source))
+            datalines = list(all[source])
+        if field == 0:
+            if searchkey == ".":
+                sourcelines = []
+                targetlines = [ line for line in datalines ]
+            else:
+                sourcelines = [ line for line in datalines if not re.search(searchkey, line) ]
+                targetlines = [ line for line in datalines if re.search(searchkey, line) ]
+        else:
+            ethfield = field - 1
+            for line in datalines:
+                if field > len(line.split()):
+                    sourcelines.append(line)
+                else:
+                    if re.search(searchkey, line.split()[ethfield]):
+                        targetlines.append(line)
+                    else:
+                        sourcelines.append(line)
+                if sortorder:
+                    targetlines = dsusort(targetlines, sortorder)
+        if sourcelines:
+            all[source] = sourcelines
+        else:
+            all[source] = []
+        if not all.has_key(target):
+            all[target] = []
+        if all[target]:
+            all[target] = all[target] + targetlines
+        else:
+            all[target] = targetlines
+        for key in all:
+            newfile = open(key, 'w')
+            newfile.writelines(all[key])
+            newfile.close()
+      
