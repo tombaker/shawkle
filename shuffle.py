@@ -223,7 +223,8 @@ def getrules(globalrulefile, localrulefile):
     for rule in listofrulesparsed:
         sourcefilename = rule[2]
         targetfilename = rule[3]
-        valid_chars = "@-_=.%s%s" % (string.ascii_letters, string.digits)
+        # 2015-06-05: adding colon to list of permissible characters in filenames - would not work for Windows...
+        valid_chars = "@:-_=.%s%s" % (string.ascii_letters, string.digits)
         filenames = [ sourcefilename, targetfilename ]
         for filename in filenames:
             if filename[0] == ".":
