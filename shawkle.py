@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import division 
+from __future__ import division
 import os, re, shutil, string, sys, datetime, optparse
 
 def getoptions():
@@ -49,7 +49,7 @@ def datals():
     for pathname in pathnamelist:
         if os.path.isfile(pathname):
             if pathname[-3:] == "swp":
-                print('Detected swap file', repr(pathname), '- close editor and re-run - exiting...')
+                print 'Detected swap file', repr(pathname), '- close editor and re-run - exiting...'
                 sys.exit()
             if pathname[-1] == "~":
                 print 'Detected temporary file', repr(pathname), '- delete and re-run - exiting...'
