@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # 2014-11-14: original at ~/github/tombaker/shawkle/shuffle.py
 
-from __future__ import division
+
 import os, re, shutil, string, sys, datetime, optparse
 
 def getoptions():
@@ -44,12 +44,12 @@ def datals():
     for pathname in pathnamelist:
         if os.path.isfile(pathname):
             if pathname[-3:] == "swp":
-                print 'Detected swap file', repr(pathname), '- close editor and re-run - exiting...'
-                print '======================================================================'
+                print('Detected swap file', repr(pathname), '- close editor and re-run - exiting...')
+                print('======================================================================')
                 sys.exit()
             if pathname[-1] == "~":
-                print 'Detected temporary file', repr(pathname), '- delete and re-run - exiting...'
-                print '======================================================================'
+                print('Detected temporary file', repr(pathname), '- delete and re-run - exiting...')
+                print('======================================================================')
                 sys.exit()
             if pathname[0] != ".":
                 filelist.append(absfilename(pathname))
@@ -68,8 +68,8 @@ def removefiles(targetdirectory):
                 os.remove(file)
         os.chdir(pwd)
     else:
-        print 'Directory', repr(abstargetdir), 'does not exist - exiting...'
-        print '======================================================================'
+        print('Directory', repr(abstargetdir), 'does not exist - exiting...')
+        print('======================================================================')
         sys.exit()
 
 def movefiles(sourcedirectory, targetdirectory):
@@ -88,12 +88,12 @@ def movefiles(sourcedirectory, targetdirectory):
                     os.remove(file)
             os.chdir(pwd)
         else:
-            print 'Directory', repr(abstargetdir), 'does not exist - exiting...'
-            print '======================================================================'
+            print('Directory', repr(abstargetdir), 'does not exist - exiting...')
+            print('======================================================================')
             sys.exit()
     else:
-        print 'Directory', repr(abssourcedir), 'does not exist - exiting...'
-        print '======================================================================'
+        print('Directory', repr(abssourcedir), 'does not exist - exiting...')
+        print('======================================================================')
         sys.exit()
 
 def movetobackups(filelist):
@@ -102,8 +102,8 @@ def movetobackups(filelist):
     2011-04-16: Does not test for an unsuccessful attempt to create a directory
     e.g., because of missing permissions."""
     if not filelist:
-        print 'No data here to back up or process - exiting...'
-        print '======================================================================'
+        print('No data here to back up or process - exiting...')
+        print('======================================================================')
         sys.exit()
     backupdirs = ['.backup', '.backupi', '.backupii', '.backupiii']
     for dir in backupdirs:
@@ -164,8 +164,8 @@ def getrules(globalrulefile, localrulefile):
         localrulelines = list(open(localrulefile))
         # print "Using config file:", repr(localrulefile), "- local rule file"
     except:
-        print 'Rule file', repr(localrulefile), 'does not exist (or is unusable) - exiting...'
-        print '======================================================================'
+        print('Rule file', repr(localrulefile), 'does not exist (or is unusable) - exiting...')
+        print('======================================================================')
         sys.exit()
     listofrulesraw = globalrulelines + localrulelines
     listofrulesparsed = []
@@ -175,48 +175,48 @@ def getrules(globalrulefile, localrulefile):
             try:
                 linesplitonorbar[0] = int(linesplitonorbar[0])
             except:
-                print repr(linesplitonorbar)
-                print 'First field must be an integer - exiting...'
-                print '======================================================================'
+                print(repr(linesplitonorbar))
+                print('First field must be an integer - exiting...')
+                print('======================================================================')
             if linesplitonorbar[0] < 0:
-                print repr(linesplitonorbar)
-                print 'First field must be a positive integer - exiting...'
-                print '======================================================================'
+                print(repr(linesplitonorbar))
+                print('First field must be a positive integer - exiting...')
+                print('======================================================================')
                 sys.exit()
             try:
                 re.compile(linesplitonorbar[1])
             except:
                 # If string 'linesplitonorbar[1]' is not valid regular expression (eg, contains unmatched parentheses)
                 # or some other error occurs during compilation.
-                print 'In rule:', repr(linesplitonorbar)
-                print '...in order to match the regex string:', repr(linesplitonorbar[1])
+                print('In rule:', repr(linesplitonorbar))
+                print('...in order to match the regex string:', repr(linesplitonorbar[1]))
                 catstring = "...the rule component must be escaped as follows: '" + re.escape(linesplitonorbar[1]) + "'"
-                print catstring
+                print(catstring)
                 sys.exit()
             if len(linesplitonorbar[4]) > 0:
                 if not linesplitonorbar[4].isdigit():
-                    print repr(linesplitonorbar)
-                    print 'Fifth field must be an integer or zero-length string - exiting...'
-                    print '======================================================================'
+                    print(repr(linesplitonorbar))
+                    print('Fifth field must be an integer or zero-length string - exiting...')
+                    print('======================================================================')
                     sys.exit()
             if linesplitonorbar[4] < 1:
-                print repr(linesplitonorbar)
-                print 'Fifth field integer must be greater than zero - exiting...'
-                print '======================================================================'
+                print(repr(linesplitonorbar))
+                print('Fifth field integer must be greater than zero - exiting...')
+                print('======================================================================')
                 sys.exit()
             if len(linesplitonorbar[1]) > 0:
                 if len(linesplitonorbar[2]) > 0:
                     if len(linesplitonorbar[3]) > 0:
                         listofrulesparsed.append(linesplitonorbar)
             else:
-                print repr(linesplitonorbar)
-                print 'Fields 2, 3, and 4 must be non-empty - exiting...'
-                print '======================================================================'
+                print(repr(linesplitonorbar))
+                print('Fields 2, 3, and 4 must be non-empty - exiting...')
+                print('======================================================================')
                 sys.exit()
         elif len(linesplitonorbar) > 1:
-            print linesplitonorbar
-            print 'Edit to five fields, simply comment out, or escape any orbars in regex string - exiting...'
-            print '======================================================================'
+            print(linesplitonorbar)
+            print('Edit to five fields, simply comment out, or escape any orbars in regex string - exiting...')
+            print('======================================================================')
             sys.exit()
     createdfiles = []
     count = 0
@@ -228,36 +228,36 @@ def getrules(globalrulefile, localrulefile):
         filenames = [ sourcefilename, targetfilename ]
         for filename in filenames:
             if filename[0] == ".":
-                print 'Filename', repr(filename), 'should not start with a dot...'
+                print('Filename', repr(filename), 'should not start with a dot...')
                 sys.exit()
             for c in filename:
                 if c not in valid_chars:
                     if ' ' in filename:
-                        print repr(rule)
-                        print 'Filename', repr(filename), 'should have no spaces'
+                        print(repr(rule))
+                        print('Filename', repr(filename), 'should have no spaces')
                         sys.exit()
                     else:
-                        print repr(rule)
-                        print 'Filename', repr(filename), 'has one or more characters other than:', repr(valid_chars)
+                        print(repr(rule))
+                        print('Filename', repr(filename), 'has one or more characters other than:', repr(valid_chars))
                         sys.exit()
             try:
                 open(filename, 'a+').close()  # like "touch" ensures that filename is writable
             except:
-                print 'Cannot open', repr(filename), 'as a file for appending - exiting...'
-                print '======================================================================'
+                print('Cannot open', repr(filename), 'as a file for appending - exiting...')
+                print('======================================================================')
                 sys.exit()
         createdfiles.append(targetfilename)
         if count == 0:
             createdfiles.append(sourcefilename)
         if sourcefilename == targetfilename:
-            print 'In rules:', repr(rule)
-            print 'Source file:', repr(sourcefilename), 'is same as target file:', repr(targetfilename), '- exiting...'
-            print '======================================================================'
+            print('In rules:', repr(rule))
+            print('Source file:', repr(sourcefilename), 'is same as target file:', repr(targetfilename), '- exiting...')
+            print('======================================================================')
             sys.exit()
         if not sourcefilename in createdfiles:
-            print repr(rule)
-            print 'Source file', repr(sourcefilename), 'has no precedent target file.  Exiting...'
-            print '======================================================================'
+            print(repr(rule))
+            print('Source file', repr(sourcefilename), 'has no precedent target file.  Exiting...')
+            print('======================================================================')
             sys.exit()
         count = count + 1
     return listofrulesparsed
@@ -299,10 +299,10 @@ def relocatefiles(files2dirs):
         timestampedpathname = dirpath + '/' + prefix[0:13] + prefix[14:16] + prefix[17:25] + '.' + filename
         try:
             shutil.move(filename, timestampedpathname)
-            print 'Moving', repr(filename), 'to', repr(timestampedpathname)
+            print('Moving', repr(filename), 'to', repr(timestampedpathname))
         except:
             if os.path.exists(filename):
-                print 'Keeping file', repr(filename), 'where it is - directory', dirpath, 'does not exist...'
+                print('Keeping file', repr(filename), 'where it is - directory', dirpath, 'does not exist...')
 
 def shuffle(rules, datalines):
     """Takes as arguments a list of rules and a list of data lines as a starting point.
@@ -364,8 +364,8 @@ def comparesize(sizebefore, sizeafter):
         #print 'DONE'
         pass
     else:
-        print 'Warning: data may have been lost - revert to backup!'
-        print '======================================================================'
+        print('Warning: data may have been lost - revert to backup!')
+        print('======================================================================')
 
 def urlify(listofdatafiles, sedtxt, sedhtml, htmldir, cloud):
     """For each file in list of files (listofdatafiles): 
@@ -382,7 +382,7 @@ def urlify(listofdatafiles, sedtxt, sedhtml, htmldir, cloud):
         cloudlines = list(open(cloud))
     htmldir = absdirname(htmldir)
     if not os.path.isdir(htmldir):
-        print 'Creating directory', repr(htmldir)
+        print('Creating directory', repr(htmldir))
         os.mkdir(htmldir)
     else:
         removefiles(htmldir)
@@ -392,8 +392,8 @@ def urlify(listofdatafiles, sedtxt, sedhtml, htmldir, cloud):
             openfilelines = list(open(file))
             openfilelines = cloudlines + openfilelines
         except:
-            print 'Cannot open', file, '- exiting...'
-            print '======================================================================'
+            print('Cannot open', file, '- exiting...')
+            print('======================================================================')
             sys.exit()
         urlifiedlines = []
         for line in openfilelines:
@@ -418,8 +418,8 @@ def urlify(listofdatafiles, sedtxt, sedhtml, htmldir, cloud):
         try:
             openfilehtml = open(filehtml, 'w')
         except:
-            print 'Cannot open', repr(filehtml), 'for writing - exiting...'
-            print '======================================================================'
+            print('Cannot open', repr(filehtml), 'for writing - exiting...')
+            print('======================================================================')
             sys.exit()
         openfilehtml.write('<PRE>\n')
         linenumber = 1
@@ -460,11 +460,11 @@ def mustbetext(datafiles):
     Draws on p.25 recipe from O'Reilly Python Cookbook."""
     for file in datafiles:
         givenstring = open(file).read(512)
-        text_characters = "".join(map(chr, range(32, 127))) + "\n\r\t\b"
+        text_characters = "".join(map(chr, list(range(32, 127)))) + "\n\r\t\b"
         _null_trans = string.maketrans("", "")
         if "\0" in givenstring:     # if givenstring contains any null, it's not text
-            print 'Data file:', repr(file), 'contains a null, ergo is not a text file - exiting...'
-            print '======================================================================'
+            print('Data file:', repr(file), 'contains a null, ergo is not a text file - exiting...')
+            print('======================================================================')
             sys.exit()
         if not givenstring:         # an "empty" string is "text" (arbitrary but reasonable choice)
             return True
@@ -473,15 +473,15 @@ def mustbetext(datafiles):
         lengthgivenstring = len(givenstring)
         proportion = lengthsubstringwithnontextcharacters / lengthgivenstring
         if proportion >= 0.30: # s is 'text' if less than 30% of its characters are non-text ones
-            print 'Data file', repr(file), 'has more than 30% non-text, ergo is not a text file - exiting...'
-            print '======================================================================'
+            print('Data file', repr(file), 'has more than 30% non-text, ergo is not a text file - exiting...')
+            print('======================================================================')
             sys.exit()
         filelines = list(open(file))
         for line in filelines:
             linestripped = line.strip()
             if len(linestripped) == 0:
-                print 'File', repr(file), 'has blank lines - exiting...'
-                print '======================================================================'
+                print('File', repr(file), 'has blank lines - exiting...')
+                print('======================================================================')
                 sys.exit()
 
 def urlify_string(s):
