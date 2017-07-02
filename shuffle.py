@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # 2014-11-14: original at ~/github/tombaker/shawkle/shuffle.py
-
 
 import os, re, shutil, string, sys, datetime, optparse
 
