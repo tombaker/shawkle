@@ -192,17 +192,17 @@ def getrules(globalrulefile, localrulefile):
                 catstring = "...the rule component must be escaped as follows: '" + re.escape(linesplitonorbar[1]) + "'"
                 print(catstring)
                 sys.exit()
-            if len(linesplitonorbar[4]) > 0:
-                if not linesplitonorbar[4].isdigit():
-                    print(repr(linesplitonorbar))
-                    print('Fifth field must be an integer or zero-length string - exiting...')
-                    print('======================================================================')
-                    sys.exit()
-            if linesplitonorbar[4] < 1:
-                print(repr(linesplitonorbar))
-                print('Fifth field integer must be greater than zero - exiting...')
-                print('======================================================================')
-                sys.exit()
+#            if len(linesplitonorbar[4]) > 0:
+#                if not linesplitonorbar[4].isdigit():
+#                    print(repr(linesplitonorbar))
+#                    print('Fifth field must be an integer or zero-length string - exiting...')
+#                    print('======================================================================')
+#                    sys.exit()
+#            if linesplitonorbar[4] < 1:
+#                print(repr(linesplitonorbar))
+#                print('Fifth field integer must be greater than zero - exiting...')
+#                print('======================================================================')
+#                sys.exit()
             if len(linesplitonorbar[1]) > 0:
                 if len(linesplitonorbar[2]) > 0:
                     if len(linesplitonorbar[3]) > 0:
@@ -457,31 +457,32 @@ def mustbetext(datafiles):
     """Confirms that listed files consist of plain text, with no blank lines, 
     else exits with helpful error message.
     Draws on p.25 recipe from O'Reilly Python Cookbook."""
-    for file in datafiles:
-        givenstring = open(file).read(512)
-        text_characters = "".join(map(chr, list(range(32, 127)))) + "\n\r\t\b"
-        _null_trans = string.maketrans("", "")
-        if "\0" in givenstring:     # if givenstring contains any null, it's not text
-            print('Data file:', repr(file), 'contains a null, ergo is not a text file - exiting...')
-            print('======================================================================')
-            sys.exit()
-        if not givenstring:         # an "empty" string is "text" (arbitrary but reasonable choice)
-            return True
-        substringwithnontextcharacters = givenstring.translate(_null_trans, text_characters)
-        lengthsubstringwithnontextcharacters = len(substringwithnontextcharacters)
-        lengthgivenstring = len(givenstring)
-        proportion = lengthsubstringwithnontextcharacters / lengthgivenstring
-        if proportion >= 0.30: # s is 'text' if less than 30% of its characters are non-text ones
-            print('Data file', repr(file), 'has more than 30% non-text, ergo is not a text file - exiting...')
-            print('======================================================================')
-            sys.exit()
-        filelines = list(open(file))
-        for line in filelines:
-            linestripped = line.strip()
-            if len(linestripped) == 0:
-                print('File', repr(file), 'has blank lines - exiting...')
-                print('======================================================================')
-                sys.exit()
+    pass
+#    for file in datafiles:
+#        givenstring = open(file).read(512)
+#        text_characters = "".join(map(chr, list(range(32, 127)))) + "\n\r\t\b"
+#        _null_trans = string.maketrans("", "")
+#        if "\0" in givenstring:     # if givenstring contains any null, it's not text
+#            print('Data file:', repr(file), 'contains a null, ergo is not a text file - exiting...')
+#            print('======================================================================')
+#            sys.exit()
+#        if not givenstring:         # an "empty" string is "text" (arbitrary but reasonable choice)
+#            return True
+#        substringwithnontextcharacters = givenstring.translate(_null_trans, text_characters)
+#        lengthsubstringwithnontextcharacters = len(substringwithnontextcharacters)
+#        lengthgivenstring = len(givenstring)
+#        proportion = lengthsubstringwithnontextcharacters / lengthgivenstring
+#        if proportion >= 0.30: # s is 'text' if less than 30% of its characters are non-text ones
+#            print('Data file', repr(file), 'has more than 30% non-text, ergo is not a text file - exiting...')
+#            print('======================================================================')
+#            sys.exit()
+#        filelines = list(open(file))
+#        for line in filelines:
+#            linestripped = line.strip()
+#            if len(linestripped) == 0:
+#                print('File', repr(file), 'has blank lines - exiting...')
+#                print('======================================================================')
+#                sys.exit()
 
 def urlify_string(s):
     """Puts HTML links around a URL, i.e., a string ("s") starting
