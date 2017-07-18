@@ -485,31 +485,11 @@ def mustbetext(datafiles):
 #                sys.exit()
 
 def urlify_string(s):
-    """Puts HTML links around a URL, i.e., a string ("s") starting
-    with "http", "file", or "irc", etc.
-    This code, found on Web, appears to be based on Perl Cookbook, section 6.21 ("urlify")."""
-    urls = r'(http|https|telnet|gopher|file|wais|ftp|irc)'
-    ltrs = r'\w';
-    gunk = r'/#~:.?+=&%@!\-'
-    punc = r'.:?\-'
-    any  = ltrs + gunk + punc 
-    pat = re.compile(r"""
-      \b                    # start at word boundary
-      (                     # begin \1  {
-       %(urls)s  :          # need resource and a colon
-       [%(any)s] +?         # followed by one or more
-                            #  of any valid character, but
-                            #  be conservative and take only
-                            #  what you need to....
-      )                     # end   \1  }
-      (?=                   # look-ahead non-consumptive assertion
-       [%(punc)s]*          # either 0 or more punctuation
-       [^%(any)s]           #   followed by a non-url char
-       |                    # or else
-       $                    #   then end of the string
-      )
-    """%locals(), re.VERBOSE | re.IGNORECASE)
-    return re.sub(pat, r"<A HREF=\1>\1</A>", s)
+    """Puts HTML links around URLs found in a string."""
+    URL_REGEX = re.compile(r"""((?:mailto:|git://|http://|https://)[^ <>'"{},|\\^`[\]]*)""")
+    if '<a href=' in s:
+        return s
+    return URL_REGEX.sub(r'<a href="\1">\1</a>', s)
 
 if __name__ == "__main__":
     #home = os.environ.get("HOME")            # uncomment to use test data
