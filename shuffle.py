@@ -6,8 +6,6 @@ import os, re, shutil, string, sys, datetime, optparse
 def getoptions():
     p = optparse.OptionParser(description="Shawkle - Rule-driven maintenance of plain-text lists",
         prog="shawkle.py", version="0.5", usage="%prog")
-    p.add_option("--cloud", action="store", type="string", dest="cloud", default="cloud",
-        help="file, contents of which to be prefixed to each urlified HTML file; default 'cloud'")
     p.add_option("--files2dirs", action="store", type="string", dest="files2dirs", default='.files2dirs',
         help="files with corresponding target directories; default '.files2dirs'")
     p.add_option("--globalrules", action="store", type="string", dest="globalrules", default='.globalrules',
@@ -362,17 +360,11 @@ def comparesize(sizebefore, sizeafter):
         print('Warning: data may have been lost - revert to backup!')
         print('======================================================================')
 
-def urlify(listofdatafiles, htmldir, cloud):
+def urlify(listofdatafiles, htmldir):
     """For each file in list of files (listofdatafiles): 
         create a urlified (HTML) file in the specified directory (htmldir), 
-        prepending the contents of an optional cloud file (cloud) to each urlified file,
         Note: Need to replace fourth argument of urlify with something like str(arguments.htmldir) - test...
-        urlify(datafilesaftermove, '.imac', optionalcloudfile)"""
-    cloud = absfilename(cloud)
-    cloudlines = []
-    if os.path.isfile(cloud):
-        #print "Prepending file", repr(cloud), "to each urlified file"
-        cloudlines = list(open(cloud))
+        urlify(datafilesaftermove, '.imac')"""
     htmldir = absdirname(htmldir)
     if not os.path.isdir(htmldir):
         print('Creating directory', repr(htmldir))
@@ -383,7 +375,6 @@ def urlify(listofdatafiles, htmldir, cloud):
     for file in listofdatafiles:
         try:
             openfilelines = list(open(file))
-            openfilelines = cloudlines + openfilelines
         except:
             print('Cannot open', file, '- exiting...')
             print('======================================================================')
@@ -487,8 +478,7 @@ if __name__ == "__main__":
     filesanddestinations   = getmappings(arguments.files2dirs, '- specifies names of files and destination directories')
     relocatefiles(filesanddestinations)
     datafilesaftermove     = datals()
-    optionalcloudfile      = arguments.cloud
     htmldirectory          = os.path.abspath(os.path.expanduser(arguments.htmldir))
-    urlify(datafilesaftermove, htmldirectory, optionalcloudfile)
+    urlify(datafilesaftermove, htmldirectory)
     comparesize(sizebefore, sizeafter)
 
