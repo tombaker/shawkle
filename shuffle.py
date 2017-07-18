@@ -14,10 +14,6 @@ def getoptions():
         help="rules used globally (typically an absolute pathname), processed first; default '.globalrules'")
     p.add_option("--localrules", action="store", type="string", dest="localrules", default=".rules",
         help="rules used locally (typically a relative pathname), processed second; default '.rules'")
-    p.add_option("--sedtxt", action="store", type="string", dest="sedtxt", default=".sedtxt",
-        help="stream edits for plain text, eg, expanding drive letters to URIs; default '.sedtxt'")
-    p.add_option("--sedhtml", action="store", type="string", dest="sedhtml", default=".sedhtml",
-        help="stream edits for urlified HTML, eg, shortening visible pathnames; default '.sedhtml'")
     p.add_option("--htmldir", action="store", type="string", dest="htmldir", default=".html",
         help="name of directory for urlified HTML files; default '.html'")
     ( options, arguments ) = p.parse_args()
@@ -366,14 +362,12 @@ def comparesize(sizebefore, sizeafter):
         print('Warning: data may have been lost - revert to backup!')
         print('======================================================================')
 
-def urlify(listofdatafiles, sedtxt, sedhtml, htmldir, cloud):
+def urlify(listofdatafiles, htmldir, cloud):
     """For each file in list of files (listofdatafiles): 
         create a urlified (HTML) file in the specified directory (htmldir), 
         prepending the contents of an optional cloud file (cloud) to each urlified file,
-        optionally stream-editing the plain text using before-and-after transforms (sedtxt), and
-        optionally stream-editing the urlified text using before-and-after transforms (sedhtml).
         Note: Need to replace fourth argument of urlify with something like str(arguments.htmldir) - test...
-        urlify(datafilesaftermove, sedtxtmappings, sedhtmlmappings, '.imac', optionalcloudfile)"""
+        urlify(datafilesaftermove, '.imac', optionalcloudfile)"""
     cloud = absfilename(cloud)
     cloudlines = []
     if os.path.isfile(cloud):
@@ -396,22 +390,7 @@ def urlify(listofdatafiles, sedtxt, sedhtml, htmldir, cloud):
             sys.exit()
         urlifiedlines = []
         for line in openfilelines:
-            for sedmap in sedtxt:
-                try:
-                    old = sedmap[0]
-                    new = sedmap[1]
-                    oldcompiled = re.compile(old)
-                    line = re.sub(oldcompiled, new, line)
-                except:
-                    pass
             line = urlify_string(line)
-            for visualimprovement in sedhtml:
-                try:
-                    ugly = visualimprovement[0]
-                    pretty = visualimprovement[1]
-                    line = line.replace(ugly, pretty)
-                except:
-                    pass
             urlifiedlines.append(line)
         filehtml = htmldir + '/' + os.path.basename(file) + '.html'
         try:
@@ -508,10 +487,8 @@ if __name__ == "__main__":
     filesanddestinations   = getmappings(arguments.files2dirs, '- specifies names of files and destination directories')
     relocatefiles(filesanddestinations)
     datafilesaftermove     = datals()
-    sedtxtmappings         = getmappings(arguments.sedtxt, '- specifies stream edits before urlification')
-    sedhtmlmappings        = getmappings(arguments.sedhtml, '- specifies stream edits after urlification')
     optionalcloudfile      = arguments.cloud
     htmldirectory          = os.path.abspath(os.path.expanduser(arguments.htmldir))
-    urlify(datafilesaftermove, sedtxtmappings, sedhtmlmappings, htmldirectory, optionalcloudfile)
+    urlify(datafilesaftermove, htmldirectory, optionalcloudfile)
     comparesize(sizebefore, sizeafter)
 
