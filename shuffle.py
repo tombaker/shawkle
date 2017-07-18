@@ -371,7 +371,6 @@ def urlify(listofdatafiles, htmldir):
         os.mkdir(htmldir)
     else:
         removefiles(htmldir)
-    #print repr(htmldir)
     for file in listofdatafiles:
         try:
             openfilelines = list(open(file))
@@ -455,21 +454,16 @@ def mustbetext(datafiles):
 #                sys.exit()
 
 def urlify_string(s):
-    """Puts HTML links around URLs found in a string."""
+    """2017-07-18 Puts HTML links around URLs found in a string."""
     URL_REGEX = re.compile(r"""((?:mailto:|git://|http://|https://)[^ <>'"{},|\\^`[\]]*)""")
     if '<a href=' in s:
         return s
     return URL_REGEX.sub(r'<a href="\1">\1</a>', s)
 
 if __name__ == "__main__":
-    #home = os.environ.get("HOME")            # uncomment to use test data
-    #testdata = home + '/shawkle/testdata/a'  # uncomment to use test data
-    #os.chdir(testdata)                       # uncomment to use test data
     arguments              = getoptions()
     rules                  = getrules(arguments.globalrules, arguments.localrules)
     sizebefore             = totalsize()
-    # 2012-11-05: Want to reduce amount of information displayed for now...
-    # print 'Size of files is', sizebefore
     datafilesbefore        = datals()
     datalines              = slurpdata(datafilesbefore)
     movetobackups(datafilesbefore)
