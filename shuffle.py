@@ -253,28 +253,6 @@ def getrules(globalrulefile, localrulefile):
         count = count + 1
     return listofrulesparsed
 
-def getmappings(files2dirs):
-    """
-    Reads yaml dictionary mapping filenames to destination directories.
-    """
-    with open(files2dirs) as yamlfile:
-        config = yaml.load(yamlfile)
-    return config
-
-def relocatefiles(files2dirs):
-    """Given a dictionary mapping filenames to target directories:
-        if file and directory both exist, moves file to directory,
-        if file exists but not the target directory, reports that the file is staying put."""
-    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
-    for filename, destination_dir in files2dirs['files2dirs'].items():
-        destination_file = destination_dir + '/' + timestamp + '.' + filename
-        try:
-            shutil.move(filename, destination_file)
-            print('Moving', repr(filename), 'to', repr(destination_file))
-        except:
-            if os.path.exists(filename):
-                print('Keeping file', repr(filename), 'where it is - directory', dirpath, 'does not exist...')
-
 def shuffle(rules, datalines):
     """Takes as arguments a list of rules and a list of data lines as a starting point.
     For the first rule only: 
@@ -381,24 +359,6 @@ def urlify(listofdatafiles, htmldir):
             openfilehtml.write(urlifiedline)
         openfilehtml.close()
 
-def dsusort(dlines, field):
-    """Given a list of datalines (list "dlines"):
-        returns list sorted by given field (greater-than-zero integer "field")."""
-    intfield = int(field)
-    ethfield = intfield - 1
-    dlinesdecorated = []
-    for line in dlines:
-        linelength = len(line.split())
-        if intfield > linelength:
-            fieldsought = ''
-        else:
-            fieldsought = line.split()[ethfield]
-        decoratedline = (fieldsought, line)
-        dlinesdecorated.append(decoratedline)
-    dlinesdecorated.sort()
-    dlinessorted = [ t[1] for t in dlinesdecorated ]
-    return dlinessorted
-
 def mustbetext(datafiles):
     """Confirms that listed files consist of plain text, with no blank lines, 
     else exits with helpful error message.
@@ -430,8 +390,56 @@ def mustbetext(datafiles):
 #                print('======================================================================')
 #                sys.exit()
 
+###############################################################################################
+
+def relocatefiles(files2dirs):
+    """
+    Given a dictionary mapping filenames to target directories:
+    * if file and directory both exist, moves file to target directory
+    * if file exists but target directory does not exist, reports that file is staying put
+    """
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+    for filename, destination_dir in files2dirs['files2dirs'].items():
+        destination_file = destination_dir + '/' + timestamp + '.' + filename
+        try:
+            shutil.move(filename, destination_file)
+            print('Moving', repr(filename), 'to', repr(destination_file))
+        except:
+            if os.path.exists(filename):
+                print('Keeping file', repr(filename), 'where it is - directory', dirpath, 'does not exist...')
+
+def getfiles2dirs(files2dirs):
+    """
+    Reads yaml dictionary mapping filenames to destination directories.
+    """
+    with open(files2dirs) as yamlfile:
+        config = yaml.load(yamlfile)
+    return config
+
+def dsusort(data_lines, sort_field_number):
+    """
+    Given: 
+    * 'data_lines': a list of data lines
+    * 'sort_field_number': number of field by which 'data_lines' is to be sorted
+
+    Returns: 
+    * 'data_lines' sorted by 'sort_field_number'
+    """
+    data_lines_decorated = []
+    for line in data_lines:
+        if int(sort_field_number) <= len(line.split()):
+            sort_field_contents = line.split()[int(sort_field_number) - 1]
+        else:
+            sort_field_contents = ''
+        data_lines_decorated.append((sort_field_contents, line))
+    data_lines_decorated.sort()
+    return [ t[1] for t in data_lines_decorated ]
+
+
 def urlify_string(s):
-    """2017-07-18 Puts HTML links around URLs found in a string."""
+    """
+    2017-07-18 Puts HTML links around URLs found in a string.
+    """
     URL_REGEX = re.compile(r"""((?:mailto:|git://|http://|https://)[^ <>'"{},|\\^`[\]]*)""")
     if '<a href=' in s:
         return s
@@ -446,7 +454,7 @@ if __name__ == "__main__":
     movetobackups(datafilesbefore)
     shuffle(rules, datalines)
     sizeafter              = totalsize()
-    filesanddestinations   = getmappings('/Users/tbaker/Dropbox/uu/agenda/.files2dirs.yaml')
+    filesanddestinations   = getfiles2dirs('/Users/tbaker/Dropbox/uu/agenda/.files2dirs.yaml')
     relocatefiles(filesanddestinations)
     datafilesaftermove     = datals()
     htmldirectory          = os.path.abspath(os.path.expanduser(arguments.htmldir))
