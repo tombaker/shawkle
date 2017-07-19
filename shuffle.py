@@ -446,7 +446,7 @@ if __name__ == "__main__":
     movetobackups(datafilesbefore)
     shuffle(rules, datalines)
     sizeafter              = totalsize()
-    filesanddestinations   = getmappings('/Users/tbaker/Dropbox/uu/agenda/.files2dirs')
+    filesanddestinations   = getmappings('/Users/tbaker/Dropbox/uu/agenda/.files2dirs.yaml')
     relocatefiles(filesanddestinations)
     datafilesaftermove     = datals()
     htmldirectory          = os.path.abspath(os.path.expanduser(arguments.htmldir))
