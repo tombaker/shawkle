@@ -266,7 +266,7 @@ def relocatefiles(files2dirs):
         if file and directory both exist, moves file to directory,
         if file exists but not the target directory, reports that the file is staying put."""
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
-    for filename, destination_dir in files2dirs:
+    for filename, destination_dir in files2dirs['files2dirs'].items():
         destination_file = destination_dir + '/' + timestamp + '.' + filename
         try:
             shutil.move(filename, destination_file)
