@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # 2014-11-14: original at ~/github/tombaker/shawkle/shuffle.py
 
-import os, re, shutil, string, sys, datetime, optparse
+import os, re, shutil, string, sys, datetime, optparse, yaml
 
 def getoptions():
     p = optparse.OptionParser(description="Shawkle - Rule-driven maintenance of plain-text lists",
         prog="shawkle.py", version="0.5", usage="%prog")
-    p.add_option("--files2dirs", action="store", type="string", dest="files2dirs", default='.files2dirs',
-        help="files with corresponding target directories; default '.files2dirs'")
     p.add_option("--globalrules", action="store", type="string", dest="globalrules", default='.globalrules',
         help="rules used globally (typically an absolute pathname), processed first; default '.globalrules'")
     p.add_option("--localrules", action="store", type="string", dest="localrules", default=".rules",
@@ -255,44 +253,24 @@ def getrules(globalrulefile, localrulefile):
         count = count + 1
     return listofrulesparsed
 
-def getmappings(mappings, helpmessage):
-    """Parses the given file, the lines are supposed to consist of two fields separated by a vertical bar.
-    Strips comments, commented lines, and blank lines.
-    Ignores lines with more than two vertical-bar-delimited fields.
-    Returns list, each item of which is a list of two items ."""
-    helpmessage = str(helpmessage)
-    mappings = os.path.expanduser(mappings)
-    # print "Using config file:", repr(mappings), helpmessage
-    mappingsraw = []
-    mappingsparsed = []
-    try:
-        mappingsraw = list(open(mappings))
-    except:
-        # print 'Config file', repr(mappings), 'does not exist - skipping...'
-        return mappingsparsed
-    for line in mappingsraw:
-        linesplitonorbar = line.partition('#')[0].strip().split('|')
-        if len(linesplitonorbar) == 2:
-            # 2014-01-18: strip whitespace - BEGIN
-            linesplitonorbar[0] = linesplitonorbar[0].strip()
-            linesplitonorbar[1] = linesplitonorbar[1].strip()
-            # 2014-01-18: strip whitespace - END
-            mappingsparsed.append(linesplitonorbar)
-    return mappingsparsed
+def getmappings(files2dirs):
+    """
+    Reads yaml dictionary mapping filenames to destination directories.
+    """
+    with open(files2dirs) as yamlfile:
+        config = yaml.load(yamlfile)
+    return config
 
 def relocatefiles(files2dirs):
-    """Given the list of mappings of filenames to target directories:
+    """Given a dictionary mapping filenames to target directories:
         if file and directory both exist, moves file to directory,
         if file exists but not the target directory, reports that the file is staying put."""
-    timestamp = datetime.datetime.now()
-    prefix = timestamp.isoformat('.')
-    for line in files2dirs:
-        filename = line[0]
-        dirpath = os.path.expanduser(line[1])
-        timestampedpathname = dirpath + '/' + prefix[0:13] + prefix[14:16] + prefix[17:25] + '.' + filename
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+    for filename, destination_dir in files2dirs:
+        destination_file = destination_dir + '/' + timestamp + '.' + filename
         try:
-            shutil.move(filename, timestampedpathname)
-            print('Moving', repr(filename), 'to', repr(timestampedpathname))
+            shutil.move(filename, destination_file)
+            print('Moving', repr(filename), 'to', repr(destination_file))
         except:
             if os.path.exists(filename):
                 print('Keeping file', repr(filename), 'where it is - directory', dirpath, 'does not exist...')
@@ -418,7 +396,6 @@ def dsusort(dlines, field):
         decoratedline = (fieldsought, line)
         dlinesdecorated.append(decoratedline)
     dlinesdecorated.sort()
-    dlinessorted = []   # 2011-03-14: Is this line necessary?
     dlinessorted = [ t[1] for t in dlinesdecorated ]
     return dlinessorted
 
@@ -469,7 +446,7 @@ if __name__ == "__main__":
     movetobackups(datafilesbefore)
     shuffle(rules, datalines)
     sizeafter              = totalsize()
-    filesanddestinations   = getmappings(arguments.files2dirs, '- specifies names of files and destination directories')
+    filesanddestinations   = getmappings('/Users/tbaker/Dropbox/uu/agenda/.files2dirs')
     relocatefiles(filesanddestinations)
     datafilesaftermove     = datals()
     htmldirectory          = os.path.abspath(os.path.expanduser(arguments.htmldir))
