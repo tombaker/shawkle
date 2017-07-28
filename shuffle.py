@@ -401,7 +401,7 @@ def relocatefiles(files2dirs):
             print('Moving', repr(filename), 'to', repr(destination_file))
         except:
             if os.path.exists(filename):
-                print('Keeping file', repr(filename), 'where it is - directory', dirpath, 'does not exist...')
+                print('Keeping file', repr(filename), 'where it is - directory', destination_dir, 'does not exist...')
 
 def getfiles2dirs(files2dirs):
     """
