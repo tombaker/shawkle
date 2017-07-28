@@ -184,17 +184,12 @@ def getrules(globalrulefile, localrulefile):
                 catstring = "...the rule component must be escaped as follows: '" + re.escape(linesplitonorbar[1]) + "'"
                 print(catstring)
                 sys.exit()
-#            if len(linesplitonorbar[4]) > 0:
-#                if not linesplitonorbar[4].isdigit():
-#                    print(repr(linesplitonorbar))
-#                    print('Fifth field must be an integer or zero-length string - exiting...')
-#                    print('======================================================================')
-#                    sys.exit()
-#            if linesplitonorbar[4] < 1:
-#                print(repr(linesplitonorbar))
-#                print('Fifth field integer must be greater than zero - exiting...')
-#                print('======================================================================')
-#                sys.exit()
+            if linesplitonorbar[4]:
+                if not linesplitonorbar[4].isdigit():
+                    print(repr(linesplitonorbar))
+                    print('Fifth field, if present, must be a digit - exiting...')
+                    print('======================================================================')
+                    sys.exit()
             if len(linesplitonorbar[1]) > 0:
                 if len(linesplitonorbar[2]) > 0:
                     if len(linesplitonorbar[3]) > 0:
