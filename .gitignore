@@ -2,3 +2,4 @@ data/
 shawkle-bugs/
 *.pyc
 .pdf/
+__pycache__/
