@@ -1,31 +1,42 @@
 #!/usr/bin/env python3
 # 2014-11-14: original at ~/github/tombaker/shawkle/shuffle.py
 
-import os, re, shutil, string, sys, datetime, optparse, yaml
+import datetime
+import optparse
+import os
+import re
+import shutil
+import string
+import sys
+import yaml
+
 
 def getoptions():
     p = optparse.OptionParser(description="Shawkle - Rule-driven maintenance of plain-text lists",
-        prog="shawkle.py", version="0.5", usage="%prog")
+                              prog="shawkle.py", version="0.5", usage="%prog")
     p.add_option("--globalrules", action="store", type="string", dest="globalrules", default='.globalrules',
-        help="rules used globally (typically an absolute pathname), processed first; default '.globalrules'")
+                 help="rules used globally (typically an absolute pathname), processed first; default '.globalrules'")
     p.add_option("--localrules", action="store", type="string", dest="localrules", default=".rules",
-        help="rules used locally (typically a relative pathname), processed second; default '.rules'")
+                 help="rules used locally (typically a relative pathname), processed second; default '.rules'")
     p.add_option("--htmldir", action="store", type="string", dest="htmldir", default=".html",
-        help="name of directory for urlified HTML files; default '.html'")
-    ( options, arguments ) = p.parse_args()
+                 help="name of directory for urlified HTML files; default '.html'")
+    (options, arguments) = p.parse_args()
     return options
+
 
 def absfilename(filename):
     filenameexpanded = os.path.abspath(os.path.expanduser(filename))
     if os.path.isfile(filenameexpanded):
-        filename = filenameexpanded 
+        filename = filenameexpanded
     return filename
+
 
 def absdirname(dirname):
     dirnameexpanded = os.path.abspath(os.path.expanduser(dirname))
     if os.path.isdir(dirnameexpanded):
-        dirname = dirnameexpanded 
+        dirname = dirnameexpanded
     return dirname
+
 
 def datals():
     """Returns list of files in current directory, excluding dot files and subdirectories.
@@ -46,6 +57,7 @@ def datals():
                 filelist.append(absfilename(pathname))
     return filelist
 
+
 def removefiles(targetdirectory):
     pwd = os.getcwd()
     abstargetdir = absdirname(targetdirectory)
@@ -62,6 +74,7 @@ def removefiles(targetdirectory):
         print('Directory', repr(abstargetdir), 'does not exist - exiting...')
         print('======================================================================')
         sys.exit()
+
 
 def movefiles(sourcedirectory, targetdirectory):
     pwd = os.getcwd()
@@ -87,6 +100,7 @@ def movefiles(sourcedirectory, targetdirectory):
         print('======================================================================')
         sys.exit()
 
+
 def movetobackups(filelist):
     """Moves given list of files to directory "$PWD/.backup", 
     bumping previous backups to ".backupi", ".backupii", and ".backupiii".
@@ -96,23 +110,24 @@ def movetobackups(filelist):
         print('No data here to back up or process - exiting...')
         print('======================================================================')
         sys.exit()
-    backupdirs = ['.backup', '.backupi', '.backupii', '.backupiii']
-    for dir in backupdirs:
-        if not os.path.isdir(dir):
-            os.mkdir(dir)
-    removefiles(backupdirs[3])
-    movefiles(backupdirs[2], backupdirs[3])
-    movefiles(backupdirs[1], backupdirs[2])
-    movefiles(backupdirs[0], backupdirs[1])
+    backup_directories = ['.backup', '.backupi', '.backupii', '.backupiii']
+    for directory in backup_directories:
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+    removefiles(backup_directories[3])
+    movefiles(backup_directories[2], backup_directories[3])
+    movefiles(backup_directories[1], backup_directories[2])
+    movefiles(backup_directories[0], backup_directories[1])
     for file in filelist:
-        shutil.move(file, backupdirs[0])
+        shutil.move(file, backup_directories[0])
 
-def totalsize():
+
+def total_size():
     """Returns total size in bytes of files in current directory,
     silently removing files of length zero."""
     totalsize = 0
     # 2012-11-05: Want to make the display shorter for now...
-    #print 'Removing zero-length files'
+    # print 'Removing zero-length files'
     for file in os.listdir(os.getcwd()):
         if os.path.isfile(file):  # ignore directories, especially hidden ("dot") directories
             filesize = os.path.getsize(file)
@@ -122,6 +137,7 @@ def totalsize():
                 if file[0] != ".":
                     totalsize = totalsize + filesize
     return totalsize
+
 
 def slurpdata(datafileslisted):
     """Calls mustbetext() to confirm that all listed files consist of plain text with no blank lines.
@@ -133,6 +149,7 @@ def slurpdata(datafileslisted):
         alldatalines = alldatalines + filelines
     alldatalines.sort()
     return alldatalines
+
 
 def getrules(globalrulefile, localrulefile):
     """Consolidates the lines of (optional) global and (mandatory) local rule files into one list.
@@ -211,7 +228,7 @@ def getrules(globalrulefile, localrulefile):
         targetfilename = rule[3]
         # 2015-06-05: adding colon to list of permissible characters in filenames - would not work for Windows...
         valid_chars = "@:-_=.%s%s" % (string.ascii_letters, string.digits)
-        filenames = [ sourcefilename, targetfilename ]
+        filenames = [sourcefilename, targetfilename]
         for filename in filenames:
             if filename[0] == ".":
                 print('Filename', repr(filename), 'should not start with a dot...')
@@ -248,7 +265,8 @@ def getrules(globalrulefile, localrulefile):
         count = count + 1
     return listofrulesparsed
 
-def shuffle(rules, datalines):
+
+def shuffle(rule_list, dataline_list):
     """Takes as arguments a list of rules and a list of data lines as a starting point.
     For the first rule only: 
         writes data lines matching a regular expression to the target file,
@@ -258,7 +276,7 @@ def shuffle(rules, datalines):
         writes lines matching a regular expression to the target file, 
         writes lines not matching a regular expression to the source file, overwriting the source file."""
     rulenumber = 0
-    for rule in rules:
+    for rule in rule_list:
         rulenumber += 1
         field = rule[0]
         searchkey = rule[1]
@@ -268,21 +286,21 @@ def shuffle(rules, datalines):
         sourcelines = []
         targetlines = []
         # 2012-11-05: Want to shorten display for now, so commenting out...
-        #if sortorder:
+        # if sortorder:
         #    print '%s [%s] "%s" to "%s", sorted by field %s' % (field, searchkey, source, target, sortorder)
-        #else:
+        # else:
         #    print '%s [%s] "%s" to "%s"' % (field, searchkey, source, target)
         if rulenumber > 1:
-            datalines = list(open(source))
+            dataline_list = list(open(source))
         if field == 0:
             if searchkey == ".":
-                targetlines = [ line for line in datalines ]
+                targetlines = [line for line in dataline_list]
             else:
-                sourcelines = [ line for line in datalines if not re.search(searchkey, line) ]
-                targetlines = [ line for line in datalines if re.search(searchkey, line) ]
+                sourcelines = [line for line in dataline_list if not re.search(searchkey, line)]
+                targetlines = [line for line in dataline_list if re.search(searchkey, line)]
         else:
             ethfield = field - 1
-            for line in datalines:
+            for line in dataline_list:
                 if field > len(line.split()):
                     sourcelines.append(line)
                 else:
@@ -290,26 +308,34 @@ def shuffle(rules, datalines):
                         targetlines.append(line)
                     else:
                         sourcelines.append(line)
-        sourcefile = open(source, 'w'); sourcefile.writelines(sourcelines); sourcefile.close()
-        targetfile = open(target, 'a'); targetfile.writelines(targetlines); targetfile.close()
+        sourcefile = open(source, 'w')
+        sourcefile.writelines(sourcelines)
+        sourcefile.close()
+        targetfile = open(target, 'a')
+        targetfile.writelines(targetlines)
+        targetfile.close()
         if sortorder:
             targetlines = list(open(target))
-            targetlines = dsusort(targetlines, sortorder)
-            targetfile = open(target, 'w'); targetfile.writelines(targetlines); targetfile.close()
+            targetlines = sort_by_field(targetlines, int(sortorder))
+            targetfile = open(target, 'w')
+            targetfile.writelines(targetlines)
+            targetfile.close()
+
 
 def comparesize(sizebefore, sizeafter):
     """Given the aggregate size in bytes of files "before" and "after":
         reports if sizes are the same, or
         warns if sizes are different."""
-    #print 'Size pre was', sizebefore
-    #print 'Size post is', sizeafter, '- includes files, if any, moved to other directories'
+    # print 'Size pre was', sizebefore
+    # print 'Size post is', sizeafter, '- includes files, if any, moved to other directories'
     if sizebefore == sizeafter:
-        #print 'Done: data shawkled and intact!'
-        #print 'DONE'
+        # print 'Done: data shawkled and intact!'
+        # print 'DONE'
         pass
     else:
         print('Warning: data may have been lost - revert to backup!')
         print('======================================================================')
+
 
 def urlify(listofdatafiles, htmldir):
     """For each file in list of files (listofdatafiles): 
@@ -354,11 +380,14 @@ def urlify(listofdatafiles, htmldir):
             openfilehtml.write(urlifiedline)
         openfilehtml.close()
 
+
 def mustbetext(datafiles):
     """Confirms that listed files consist of plain text, with no blank lines, 
     else exits with helpful error message.
     Draws on p.25 recipe from O'Reilly Python Cookbook."""
     pass
+
+
 #    for file in datafiles:
 #        givenstring = open(file).read(512)
 #        text_characters = "".join(map(chr, list(range(32, 127)))) + "\n\r\t\b"
@@ -403,6 +432,7 @@ def relocatefiles(files2dirs):
             if os.path.exists(filename):
                 print('Keeping file', repr(filename), 'where it is - directory', destination_dir, 'does not exist...')
 
+
 def getfiles2dirs(files2dirs):
     """
     Reads yaml dictionary mapping filenames to destination directories.
@@ -411,25 +441,17 @@ def getfiles2dirs(files2dirs):
         config = yaml.load(yamlfile)
     return config
 
-def dsusort(data_lines, sort_field_number):
-    """
-    Given: 
-    * 'data_lines': a list of data lines
-    * 'sort_field_number': number of field by which 'data_lines' is to be sorted
 
-    Returns: 
-    * 'data_lines' sorted by 'sort_field_number'
+def sort_by_field(list_of_strings: list, sortfield: int):
     """
-    data_lines_decorated = []
-    for line in data_lines:
-        if int(sort_field_number) <= len(line.split()):
-            sort_field_contents = line.split()[int(sort_field_number) - 1]
-        else:
-            sort_field_contents = ''
-        data_lines_decorated.append((sort_field_contents, line))
-    data_lines_decorated.sort()
-    return [ t[1] for t in data_lines_decorated ]
+    Given:
+    * 'list_of_strings': a list of data lines
+    * 'sortfield': number of field by which 'list_of_strings' is to be sorted
 
+    Returns:
+    * 'list_of_strings' sorted by 'sortfield'
+    """
+    return sorted(list_of_strings, key=lambda name: name.split()[sortfield - 1:sortfield])
 
 def urlify_string(s):
     """
@@ -440,19 +462,19 @@ def urlify_string(s):
         return s
     return URL_REGEX.sub(r'<a href="\1">\1</a>', s)
 
+
 if __name__ == "__main__":
-    arguments              = getoptions()
-    rules                  = getrules(arguments.globalrules, arguments.localrules)
-    sizebefore             = totalsize()
-    datafilesbefore        = datals()
-    datalines              = slurpdata(datafilesbefore)
+    args = getoptions()
+    rules = getrules(args.globalrules, args.localrules)
+    size_before = total_size()
+    datafilesbefore = datals()
+    datalines = slurpdata(datafilesbefore)
     movetobackups(datafilesbefore)
     shuffle(rules, datalines)
-    sizeafter              = totalsize()
-    filesanddestinations   = getfiles2dirs('/Users/tbaker/Dropbox/uu/agenda/.mklists.yaml')
+    size_after = total_size()
+    filesanddestinations = getfiles2dirs('/Users/tbaker/Dropbox/uu/agenda/.mklists.yaml')
     relocatefiles(filesanddestinations)
-    datafilesaftermove     = datals()
-    htmldirectory          = os.path.abspath(os.path.expanduser(arguments.htmldir))
+    datafilesaftermove = datals()
+    htmldirectory = os.path.abspath(os.path.expanduser(args.htmldir))
     urlify(datafilesaftermove, htmldirectory)
-    comparesize(sizebefore, sizeafter)
-
+    comparesize(size_before, size_after)
