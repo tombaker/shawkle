@@ -3,3 +3,5 @@ shawkle-bugs/
 *.pyc
 .pdf/
 __pycache__/
+.cache/
+.idea/
