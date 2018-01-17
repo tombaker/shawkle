@@ -316,7 +316,7 @@ def shuffle(rule_list, dataline_list):
         targetfile.close()
         if sortorder:
             targetlines = list(open(target))
-            targetlines = sort_by_field(targetlines, int(sortorder))
+            targetlines = dsusort(targetlines, int(sortorder))
             targetfile = open(target, 'w')
             targetfile.writelines(targetlines)
             targetfile.close()
@@ -442,7 +442,7 @@ def getfiles2dirs(files2dirs):
     return config
 
 
-def sort_by_field(list_of_strings: list, sortfield: int):
+def dsusort(list_of_strings: list, sortfield: int):
     """
     Given:
     * 'list_of_strings': a list of data lines
@@ -451,7 +451,7 @@ def sort_by_field(list_of_strings: list, sortfield: int):
     Returns:
     * 'list_of_strings' sorted by 'sortfield'
     """
-    return sorted(list_of_strings, key=lambda name: name.split()[sortfield - 1:sortfield])
+    return [t[1] for t in sorted([(item.split()[sortfield - 1:sortfield], item) for item in list_of_strings])]
 
 def urlify_string(s):
     """
