@@ -12,14 +12,36 @@ import ruamel.yaml as yaml
 
 
 def getoptions():
-    p = optparse.OptionParser(description="Shawkle - Rule-driven maintenance of plain-text lists",
-                              prog="shawkle.py", version="0.5", usage="%prog")
-    p.add_option("--globalrules", action="store", type="string", dest="globalrules", default='.globalrules',
-                 help="rules used globally (typically an absolute pathname), processed first; default '.globalrules'")
-    p.add_option("--localrules", action="store", type="string", dest="localrules", default=".rules",
-                 help="rules used locally (typically a relative pathname), processed second; default '.rules'")
-    p.add_option("--htmldir", action="store", type="string", dest="htmldir", default=".html",
-                 help="name of directory for urlified HTML files; default '.html'")
+    p = optparse.OptionParser(
+        description="Shawkle - Rule-driven maintenance of plain-text lists",
+        prog="shawkle.py",
+        version="0.5",
+        usage="%prog",
+    )
+    p.add_option(
+        "--globalrules",
+        action="store",
+        type="string",
+        dest="globalrules",
+        default=".globalrules",
+        help="rules used globally (typically an absolute pathname), processed first; default '.globalrules'",
+    )
+    p.add_option(
+        "--localrules",
+        action="store",
+        type="string",
+        dest="localrules",
+        default=".rules",
+        help="rules used locally (typically a relative pathname), processed second; default '.rules'",
+    )
+    p.add_option(
+        "--htmldir",
+        action="store",
+        type="string",
+        dest="htmldir",
+        default=".html",
+        help="name of directory for urlified HTML files; default '.html'",
+    )
     (options, arguments) = p.parse_args()
     return options
 
@@ -46,12 +68,24 @@ def datals():
     for pathname in pathnamelist:
         if os.path.isfile(pathname):
             if pathname[-3:] == "swp":
-                print('Detected swap file', repr(pathname), '- close editor and re-run - exiting...')
-                print('======================================================================')
+                print(
+                    "Detected swap file",
+                    repr(pathname),
+                    "- close editor and re-run - exiting...",
+                )
+                print(
+                    "======================================================================"
+                )
                 sys.exit()
             if pathname[-1] == "~":
-                print('Detected temporary file', repr(pathname), '- delete and re-run - exiting...')
-                print('======================================================================')
+                print(
+                    "Detected temporary file",
+                    repr(pathname),
+                    "- delete and re-run - exiting...",
+                )
+                print(
+                    "======================================================================"
+                )
                 sys.exit()
             if pathname[0] != ".":
                 filelist.append(absfilename(pathname))
@@ -71,8 +105,8 @@ def removefiles(targetdirectory):
                 os.remove(file)
         os.chdir(pwd)
     else:
-        print('Directory', repr(abstargetdir), 'does not exist - exiting...')
-        print('======================================================================')
+        print("Directory", repr(abstargetdir), "does not exist - exiting...")
+        print("======================================================================")
         sys.exit()
 
 
@@ -92,12 +126,14 @@ def movefiles(sourcedirectory, targetdirectory):
                     os.remove(file)
             os.chdir(pwd)
         else:
-            print('Directory', repr(abstargetdir), 'does not exist - exiting...')
-            print('======================================================================')
+            print("Directory", repr(abstargetdir), "does not exist - exiting...")
+            print(
+                "======================================================================"
+            )
             sys.exit()
     else:
-        print('Directory', repr(abssourcedir), 'does not exist - exiting...')
-        print('======================================================================')
+        print("Directory", repr(abssourcedir), "does not exist - exiting...")
+        print("======================================================================")
         sys.exit()
 
 
@@ -107,10 +143,10 @@ def movetobackups(filelist):
     2011-04-16: Does not test for an unsuccessful attempt to create a directory
     e.g., because of missing permissions."""
     if not filelist:
-        print('No data here to back up or process - exiting...')
-        print('======================================================================')
+        print("No data here to back up or process - exiting...")
+        print("======================================================================")
         sys.exit()
-    backup_directories = ['.backup', '.backupi', '.backupii', '.backupiii']
+    backup_directories = [".backup", ".backupi", ".backupii", ".backupiii"]
     for directory in backup_directories:
         if not os.path.isdir(directory):
             os.mkdir(directory)
@@ -129,7 +165,9 @@ def total_size():
     # 2012-11-05: Want to make the display shorter for now...
     # print 'Removing zero-length files'
     for file in os.listdir(os.getcwd()):
-        if os.path.isfile(file):  # ignore directories, especially hidden ("dot") directories
+        if os.path.isfile(
+            file
+        ):  # ignore directories, especially hidden ("dot") directories
             filesize = os.path.getsize(file)
             if filesize == 0:
                 os.remove(file)
@@ -172,40 +210,56 @@ def getrules(globalrulefile, localrulefile):
         localrulelines = list(open(localrulefile))
         # print "Using config file:", repr(localrulefile), "- local rule file"
     except:
-        print('Rule file', repr(localrulefile), 'does not exist (or is unusable) - exiting...')
-        print('======================================================================')
+        print(
+            "Rule file",
+            repr(localrulefile),
+            "does not exist (or is unusable) - exiting...",
+        )
+        print("======================================================================")
         sys.exit()
     listofrulesraw = globalrulelines + localrulelines
     listofrulesparsed = []
     for line in listofrulesraw:
-        linesplitonorbar = line.partition('#')[0].strip().split('|')
+        linesplitonorbar = line.partition("#")[0].strip().split("|")
         if len(linesplitonorbar) == 5:
             try:
                 linesplitonorbar[0] = int(linesplitonorbar[0])
             except:
                 print(repr(linesplitonorbar))
-                print('First field must be an integer - exiting...')
-                print('======================================================================')
+                print("First field must be an integer - exiting...")
+                print(
+                    "======================================================================"
+                )
             if linesplitonorbar[0] < 0:
                 print(repr(linesplitonorbar))
-                print('First field must be a positive integer - exiting...')
-                print('======================================================================')
+                print("First field must be a positive integer - exiting...")
+                print(
+                    "======================================================================"
+                )
                 sys.exit()
             try:
                 re.compile(linesplitonorbar[1])
             except:
                 # If string 'linesplitonorbar[1]' is not valid regular expression (eg, contains unmatched parentheses)
                 # or some other error occurs during compilation.
-                print('In rule:', repr(linesplitonorbar))
-                print('...in order to match the regex string:', repr(linesplitonorbar[1]))
-                catstring = "...the rule component must be escaped as follows: '" + re.escape(linesplitonorbar[1]) + "'"
+                print("In rule:", repr(linesplitonorbar))
+                print(
+                    "...in order to match the regex string:", repr(linesplitonorbar[1])
+                )
+                catstring = (
+                    "...the rule component must be escaped as follows: '"
+                    + re.escape(linesplitonorbar[1])
+                    + "'"
+                )
                 print(catstring)
                 sys.exit()
             if linesplitonorbar[4]:
                 if not linesplitonorbar[4].isdigit():
                     print(repr(linesplitonorbar))
-                    print('Fifth field, if present, must be a digit - exiting...')
-                    print('======================================================================')
+                    print("Fifth field, if present, must be a digit - exiting...")
+                    print(
+                        "======================================================================"
+                    )
                     sys.exit()
             if len(linesplitonorbar[1]) > 0:
                 if len(linesplitonorbar[2]) > 0:
@@ -213,13 +267,19 @@ def getrules(globalrulefile, localrulefile):
                         listofrulesparsed.append(linesplitonorbar)
             else:
                 print(repr(linesplitonorbar))
-                print('Fields 2, 3, and 4 must be non-empty - exiting...')
-                print('======================================================================')
+                print("Fields 2, 3, and 4 must be non-empty - exiting...")
+                print(
+                    "======================================================================"
+                )
                 sys.exit()
         elif len(linesplitonorbar) > 1:
             print(linesplitonorbar)
-            print('Edit to five fields, simply comment out, or escape any orbars in regex string - exiting...')
-            print('======================================================================')
+            print(
+                "Edit to five fields, simply comment out, or escape any orbars in regex string - exiting..."
+            )
+            print(
+                "======================================================================"
+            )
             sys.exit()
     createdfiles = []
     count = 0
@@ -231,36 +291,63 @@ def getrules(globalrulefile, localrulefile):
         filenames = [sourcefilename, targetfilename]
         for filename in filenames:
             if filename[0] == ".":
-                print('Filename', repr(filename), 'should not start with a dot...')
+                print("Filename", repr(filename), "should not start with a dot...")
                 sys.exit()
             for c in filename:
                 if c not in valid_chars:
-                    if ' ' in filename:
+                    if " " in filename:
                         print(repr(rule))
-                        print('Filename', repr(filename), 'should have no spaces')
+                        print("Filename", repr(filename), "should have no spaces")
                         sys.exit()
                     else:
                         print(repr(rule))
-                        print('Filename', repr(filename), 'has one or more characters other than:', repr(valid_chars))
+                        print(
+                            "Filename",
+                            repr(filename),
+                            "has one or more characters other than:",
+                            repr(valid_chars),
+                        )
                         sys.exit()
             try:
-                open(filename, 'a+').close()  # like "touch" ensures that filename is writable
+                open(
+                    filename, "a+"
+                ).close()  # like "touch" ensures that filename is writable
             except:
-                print('Cannot open', repr(filename), 'as a file for appending - exiting...')
-                print('======================================================================')
+                print(
+                    "Cannot open",
+                    repr(filename),
+                    "as a file for appending - exiting...",
+                )
+                print(
+                    "======================================================================"
+                )
                 sys.exit()
         createdfiles.append(targetfilename)
         if count == 0:
             createdfiles.append(sourcefilename)
         if sourcefilename == targetfilename:
-            print('In rules:', repr(rule))
-            print('Source file:', repr(sourcefilename), 'is same as target file:', repr(targetfilename), '- exiting...')
-            print('======================================================================')
+            print("In rules:", repr(rule))
+            print(
+                "Source file:",
+                repr(sourcefilename),
+                "is same as target file:",
+                repr(targetfilename),
+                "- exiting...",
+            )
+            print(
+                "======================================================================"
+            )
             sys.exit()
         if not sourcefilename in createdfiles:
             print(repr(rule))
-            print('Source file', repr(sourcefilename), 'has no precedent target file.  Exiting...')
-            print('======================================================================')
+            print(
+                "Source file",
+                repr(sourcefilename),
+                "has no precedent target file.  Exiting...",
+            )
+            print(
+                "======================================================================"
+            )
             sys.exit()
         count = count + 1
     return listofrulesparsed
@@ -296,8 +383,12 @@ def shuffle(rule_list, dataline_list):
             if searchkey == ".":
                 targetlines = [line for line in dataline_list]
             else:
-                sourcelines = [line for line in dataline_list if not re.search(searchkey, line)]
-                targetlines = [line for line in dataline_list if re.search(searchkey, line)]
+                sourcelines = [
+                    line for line in dataline_list if not re.search(searchkey, line)
+                ]
+                targetlines = [
+                    line for line in dataline_list if re.search(searchkey, line)
+                ]
         else:
             ethfield = field - 1
             for line in dataline_list:
@@ -308,16 +399,16 @@ def shuffle(rule_list, dataline_list):
                         targetlines.append(line)
                     else:
                         sourcelines.append(line)
-        sourcefile = open(source, 'w')
+        sourcefile = open(source, "w")
         sourcefile.writelines(sourcelines)
         sourcefile.close()
-        targetfile = open(target, 'a')
+        targetfile = open(target, "a")
         targetfile.writelines(targetlines)
         targetfile.close()
         if sortorder:
             targetlines = list(open(target))
             targetlines = dsusort(targetlines, int(sortorder))
-            targetfile = open(target, 'w')
+            targetfile = open(target, "w")
             targetfile.writelines(targetlines)
             targetfile.close()
 
@@ -333,8 +424,8 @@ def comparesize(sizebefore, sizeafter):
         # print 'DONE'
         pass
     else:
-        print('Warning: data may have been lost - revert to backup!')
-        print('======================================================================')
+        print("Warning: data may have been lost - revert to backup!")
+        print("======================================================================")
 
 
 def urlify(listofdatafiles, htmldir):
@@ -344,7 +435,7 @@ def urlify(listofdatafiles, htmldir):
         urlify(datafilesaftermove, '.imac')"""
     htmldir = absdirname(htmldir)
     if not os.path.isdir(htmldir):
-        print('Creating directory', repr(htmldir))
+        print("Creating directory", repr(htmldir))
         os.mkdir(htmldir)
     else:
         removefiles(htmldir)
@@ -352,23 +443,27 @@ def urlify(listofdatafiles, htmldir):
         try:
             openfilelines = list(open(file))
         except:
-            print('Cannot open', file, '- exiting...')
-            print('======================================================================')
+            print("Cannot open", file, "- exiting...")
+            print(
+                "======================================================================"
+            )
             sys.exit()
         urlifiedlines = []
         for line in openfilelines:
             line = urlify_string(line)
             urlifiedlines.append(line)
-        filehtml = htmldir + '/' + os.path.basename(file) + '.html'
+        filehtml = htmldir + "/" + os.path.basename(file) + ".html"
         try:
-            openfilehtml = open(filehtml, 'w')
+            openfilehtml = open(filehtml, "w")
         except:
-            print('Cannot open', repr(filehtml), 'for writing - exiting...')
-            print('======================================================================')
+            print("Cannot open", repr(filehtml), "for writing - exiting...")
+            print(
+                "======================================================================"
+            )
             sys.exit()
-        openfilehtml.write('<PRE>\n')
+        openfilehtml.write("<PRE>\n")
         linenumber = 1
-        field1before = ''
+        field1before = ""
         for urlifiedline in urlifiedlines:
             # 2014-01-14 For now, disabling the addition of a blank line between blocks starting with different prefixes
             # field1 = urlifiedline.split()[0]
@@ -395,14 +490,20 @@ def relocatefiles(files2dirs):
     * if file exists but target directory does not exist, reports that file is staying put
     """
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
-    for filename, destination_dir in files2dirs['files2dirs'].items():
-        destination_file = destination_dir + '/' + timestamp + '.' + filename
+    for filename, destination_dir in files2dirs["files2dirs"].items():
+        destination_file = destination_dir + "/" + timestamp + "." + filename
         try:
             shutil.move(filename, destination_file)
-            print('Moving', repr(filename), 'to', repr(destination_file))
+            print("Moving", repr(filename), "to", repr(destination_file))
         except:
             if os.path.exists(filename):
-                print('Keeping file', repr(filename), 'where it is - directory', destination_dir, 'does not exist...')
+                print(
+                    "Keeping file",
+                    repr(filename),
+                    "where it is - directory",
+                    destination_dir,
+                    "does not exist...",
+                )
 
 
 def getfiles2dirs(files2dirs):
@@ -414,12 +515,23 @@ def getfiles2dirs(files2dirs):
 
 def dsusort(list_of_strings: list, sortfield: int):
     """Returns list of strings sorted by given sortfield."""
-    return [t[1] for t in sorted([(item.split()[sortfield - 1:sortfield], item) for item in list_of_strings])]
+    return [
+        t[1]
+        for t in sorted(
+            [
+                (item.split()[sortfield - 1 : sortfield], item)
+                for item in list_of_strings
+            ]
+        )
+    ]
+
 
 def urlify_string(s):
     """Returns given string with HTML links around any URLs found."""
-    URL_REGEX = re.compile(r"""((?:mailto:|git://|http://|https://)[^ <>'"{},|\\^`[\]]*)""")
-    if '<a href=' in s:
+    URL_REGEX = re.compile(
+        r"""((?:mailto:|git://|http://|https://)[^ <>'"{},|\\^`[\]]*)"""
+    )
+    if "<a href=" in s:
         return s
     return URL_REGEX.sub(r'<a href="\1">\1</a>', s)
 
@@ -433,7 +545,7 @@ if __name__ == "__main__":
     movetobackups(datafilesbefore)
     shuffle(rules, datalines)
     size_after = total_size()
-    filesanddestinations = getfiles2dirs('/Users/tbaker/Dropbox/uu/mklists.yml')
+    filesanddestinations = getfiles2dirs("/Users/tbaker/Dropbox/uu/mklists.yml")
     relocatefiles(filesanddestinations)
     datafilesaftermove = datals()
     htmldirectory = os.path.abspath(os.path.expanduser(args.htmldir))
