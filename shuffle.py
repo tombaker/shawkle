@@ -8,7 +8,7 @@ import re
 import shutil
 import string
 import sys
-import yaml
+import ruamel.yaml as yaml
 
 
 def getoptions():
@@ -438,7 +438,7 @@ def getfiles2dirs(files2dirs):
     Reads yaml dictionary mapping filenames to destination directories.
     """
     with open(files2dirs) as yamlfile:
-        config = yaml.load(yamlfile)
+        config = yaml.safe_load(yamlfile)
     return config
 
 
@@ -472,7 +472,7 @@ if __name__ == "__main__":
     movetobackups(datafilesbefore)
     shuffle(rules, datalines)
     size_after = total_size()
-    filesanddestinations = getfiles2dirs('/Users/tbaker/Dropbox/uu/agenda/.mklists.yaml')
+    filesanddestinations = getfiles2dirs('/Users/tbaker/Dropbox/uu/mklists.yml')
     relocatefiles(filesanddestinations)
     datafilesaftermove = datals()
     htmldirectory = os.path.abspath(os.path.expanduser(args.htmldir))
