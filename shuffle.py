@@ -388,34 +388,6 @@ def mustbetext(datafiles):
     pass
 
 
-#    for file in datafiles:
-#        givenstring = open(file).read(512)
-#        text_characters = "".join(map(chr, list(range(32, 127)))) + "\n\r\t\b"
-#        _null_trans = string.maketrans("", "")
-#        if "\0" in givenstring:     # if givenstring contains any null, it's not text
-#            print('Data file:', repr(file), 'contains a null, ergo is not a text file - exiting...')
-#            print('======================================================================')
-#            sys.exit()
-#        if not givenstring:         # an "empty" string is "text" (arbitrary but reasonable choice)
-#            return True
-#        substringwithnontextcharacters = givenstring.translate(_null_trans, text_characters)
-#        lengthsubstringwithnontextcharacters = len(substringwithnontextcharacters)
-#        lengthgivenstring = len(givenstring)
-#        proportion = lengthsubstringwithnontextcharacters / lengthgivenstring
-#        if proportion >= 0.30: # s is 'text' if less than 30% of its characters are non-text ones
-#            print('Data file', repr(file), 'has more than 30% non-text, ergo is not a text file - exiting...')
-#            print('======================================================================')
-#            sys.exit()
-#        filelines = list(open(file))
-#        for line in filelines:
-#            linestripped = line.strip()
-#            if len(linestripped) == 0:
-#                print('File', repr(file), 'has blank lines - exiting...')
-#                print('======================================================================')
-#                sys.exit()
-
-###############################################################################################
-
 def relocatefiles(files2dirs):
     """
     Given a dictionary mapping filenames to target directories:
@@ -434,29 +406,18 @@ def relocatefiles(files2dirs):
 
 
 def getfiles2dirs(files2dirs):
-    """
-    Reads yaml dictionary mapping filenames to destination directories.
-    """
+    """Returns dictionary (mapping files to destination directories) from YAML file."""
     with open(files2dirs) as yamlfile:
         config = yaml.safe_load(yamlfile)
     return config
 
 
 def dsusort(list_of_strings: list, sortfield: int):
-    """
-    Given:
-    * 'list_of_strings': a list of data lines
-    * 'sortfield': number of field by which 'list_of_strings' is to be sorted
-
-    Returns:
-    * 'list_of_strings' sorted by 'sortfield'
-    """
+    """Returns list of strings sorted by given sortfield."""
     return [t[1] for t in sorted([(item.split()[sortfield - 1:sortfield], item) for item in list_of_strings])]
 
 def urlify_string(s):
-    """
-    2017-07-18 Puts HTML links around URLs found in a string.
-    """
+    """Returns given string with HTML links around any URLs found."""
     URL_REGEX = re.compile(r"""((?:mailto:|git://|http://|https://)[^ <>'"{},|\\^`[\]]*)""")
     if '<a href=' in s:
         return s
