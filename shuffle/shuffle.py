@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from pathlib import Path
 import datetime
 import optparse
 import os
@@ -145,18 +146,21 @@ def movetobackups(filelist):
         shutil.move(file, backup_directories[0])
 
 
-def total_size():
-    """Compute total size of files in cwd, silently removing files of length zero."""
-    totalsize = 0
-    for file in os.listdir(os.getcwd()):
-        if os.path.isfile(file):
-            filesize = os.path.getsize(file)
-            if filesize == 0:
-                os.remove(file)
-            else:
-                if file[0] != ".":
-                    totalsize = totalsize + filesize
-    return totalsize
+def total_size() -> int:
+    """Compute total size of files in cwd, silently removing files of length zero.
+
+    Returns:
+        int: Total size of files in cwd.
+    """
+    cwd = Path.cwd()
+    files = [entry for entry in Path.cwd().iterdir() if entry.is_file()]
+    total_size = 0
+    for file in files:
+        if file.stat().st_size == 0:
+            file.unlink()
+        else:
+            total_size += file.stat().st_size
+    return total_size
 
 
 def slurpdata(datafileslisted):
@@ -388,17 +392,9 @@ def getfiles2dirs(files2dirs):
     return config
 
 
-def dsusort(list_of_strings: list, sortfield: int):
-    """Returns list of strings sorted by given sortfield."""
-    return [
-        t[1]
-        for t in sorted(
-            [
-                (item.split()[sortfield - 1 : sortfield], item)
-                for item in list_of_strings
-            ]
-        )
-    ]
+def dsusort(lines: list, fn: int):
+    """Return list of strings ("lines") sorted by given field."""
+    return [t[1] for t in sorted([(item.split()[fn-1:fn], item) for item in lines])]
 
 
 def urlify_string(s):
