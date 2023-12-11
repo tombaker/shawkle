@@ -400,7 +400,7 @@ def dsusort(lines: list, fn: int):
 def urlify_string(s):
     """Returns given string with HTML links around any URLs found."""
     URL_REGEX = re.compile(
-        r"""((?:mailto:|git://|http://|https://|file:///)[^ <>'"{},|\\^`[\]]*)"""
+        r"""((?:mailto:|git://|http://|https://|file:///|chrome://)[^ <>'"{},|\\^`[\]]*)"""
     )
     if "<a href=" in s:
         return s
