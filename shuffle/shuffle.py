@@ -388,7 +388,8 @@ def relocatefiles(files2dirs):
 def getfiles2dirs(files2dirs):
     """Returns dictionary (mapping files to destination directories) from YAML file."""
     with open(files2dirs) as yamlfile:
-        config = yaml.safe_load(yamlfile)
+        yaml_parser = yaml.YAML(typ='safe', pure=True)
+        config = yaml_parser.load(yamlfile)
     return config
 
 
